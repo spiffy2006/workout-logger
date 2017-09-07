@@ -12,7 +12,6 @@ export default class AddWeekDay extends Component {
       <View>
         {weekdays.map((day, i) => {
           let lowerCaseDay = day.toLowerCase();
-          console.log(week[lowerCaseDay], day);
           return (
             <Button
               key={day}

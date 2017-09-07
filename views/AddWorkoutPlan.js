@@ -39,9 +39,13 @@ export default class AddWorkoutPlan extends Reflux.Component {
       modalVisible: false,
       currentStep: '',
       filteredWorkouts: this.workoutsList,
-      workoutsList: Object.values(this.workoutCollection)
+      workoutsList: this.getOriginalWorkoutsList()
     };
     console.log(this.state.workoutsList);
+  }
+
+  getOriginalWorkoutsList() {
+    return Object.values(this.workoutCollection);
   }
 
   setModalVisible(visible) {
@@ -51,7 +55,7 @@ export default class AddWorkoutPlan extends Reflux.Component {
   onBackPress() {
     switch(this.state.currentStep) {
       case 'add_workouts':
-        return this.setState({currentStep: 'add_weekday'});
+        return this.setState({currentStep: 'add_weekday', workoutsList: this.getOriginalWorkoutsList()});
     }
   }
 
@@ -74,7 +78,6 @@ export default class AddWorkoutPlan extends Reflux.Component {
   }
 
   addWeekDay() {
-    console.log(this.state);
     let weekdays = Object.keys(this.state.week).map(d => d.charAt(0).toUpperCase() + d.substr(1))
     return (
       <AddWeekDay
@@ -89,7 +92,6 @@ export default class AddWorkoutPlan extends Reflux.Component {
             day: dayta.setTitle(title) || new Day(day),
             selectedDay: day.toLowerCase()
           });
-          console.log(new Day(day));
         }}
         saveBtnColor="#2c98f0"
         saveBtnIcon={{name: 'save', type: 'font-awesome'}}
@@ -107,7 +109,6 @@ export default class AddWorkoutPlan extends Reflux.Component {
   }
 
   isWorkoutSelected(workout) {
-    console.log(this);
     let { workouts } = this.state.day;
     let selected = false;
      for (let i = 0; i < workouts.length; i++) {
@@ -146,6 +147,7 @@ export default class AddWorkoutPlan extends Reflux.Component {
         btnOnPress={() => {
             this.setState({
               week: this.state.week.setDay(this.state.selectedDay, this.state.day),
+              workoutsList: this.getOriginalWorkoutsList(),
               day: new Day(),
               currentStep: 'add_weekday'
             });
@@ -153,13 +155,11 @@ export default class AddWorkoutPlan extends Reflux.Component {
         }
         isSelected={this.isWorkoutSelected.bind(this)}
         onSelectedClick={(workout) => {
-          console.log(workout);
           this.setState({
             day: this.state.day.add(workout)
           });
         }}
         onUnselectedClick={(workout) => {
-          console.log(workout);
           this.setState({
             day: this.state.day.remove(workout)
           });
