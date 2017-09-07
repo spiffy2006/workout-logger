@@ -32,7 +32,7 @@ export default class Card extends Component {
           {this.generateDetails()}
           <Button
             icon={{name: 'code'}}
-            backgroundColor='#03A9F4'
+            backgroundColor={this.props.buttonColor}
             onPress={() => this.props.onSelect(this.props.title)}
             buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
             title={this.props.selectText} />
@@ -45,10 +45,12 @@ Card.propTypes = {
   title: PropTypes.string.isRequired,
   details: PropTypes.array.isRequired, // [{label: string, text: string}]
   onSelect: PropTypes.func,
-  selectText: PropTypes.string
+  selectText: PropTypes.string,
+  buttonColor: PropTypes.string
 };
 
 Card.defaultProps = {
   onSelect: name => console.log(name),
-  selectText: 'VIEW'
+  selectText: 'VIEW',
+  buttonColor: '#03A9F4'
 };

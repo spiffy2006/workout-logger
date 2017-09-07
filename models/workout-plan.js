@@ -3,14 +3,13 @@ import { Workout } from './workout.js';
 
 export class Week {
   constructor(sunday, monday, tuesday, wednesday, thursday, friday, saturday) { // *day = Day
-    let emptyDay = new Day();
-    this.sunday = sunday || emptyDay;
-    this.monday = monday || emptyDay;
-    this.tuesday = tuesday || emptyDay;
-    this.wednesday = wednesday || emptyDay;
-    this.thursday = thursday || emptyDay;
-    this.friday = friday || emptyDay;
-    this.saturday = saturday || emptyDay;
+    this.sunday = sunday || new Day();
+    this.monday = monday || new Day();
+    this.tuesday = tuesday || new Day();
+    this.wednesday = wednesday || new Day();
+    this.thursday = thursday || new Day();
+    this.friday = friday || new Day();
+    this.saturday = saturday || new Day();
   }
 
   setDay(dayOfWeek, dayta) { // get it? dayta: It is the data for that day. I'm hilarious
@@ -53,8 +52,25 @@ export class Day {
 }
 
 export class WorkoutPlan {
-  constructor(weeks) {
+  constructor(name, weeks) {
+    this.name = name || '';
     this.weeks = weeks || []; // Array<Week>
+  }
+
+  setName(name) {
+    this.name = name;
+    return this;
+  }
+
+  update(week, weekIndex) {
+    if (week.constructor === Week) {
+      if (this.weeks[weekIndex]) {
+        this.weeks[weekIndex] = week;
+      } else {
+        this.weeks.push(week);
+      }
+    }
+    return this;
   }
 
   add(week) {

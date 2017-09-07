@@ -74,8 +74,8 @@ export class WorkoutCollection {
     this.storage = new Async();
     this.storage.storageGet(WORKOUT_COLLECTION)
       .then((collection) => {
-        this.collection = collection;
-        console.log(collection);
+        this.collection = collection || {};
+        console.log(this.collection);
       });
   }
 
@@ -106,11 +106,12 @@ export class WorkoutCollection {
 }
 
 export class WorkoutPlanCollection {
-  constructor(collection, storage) {
+  constructor() {
     this.storage = new Async();
     this.storage.storageGet(WORKOUT_PLAN_COLLECTION)
       .then((collection) => {
-        this.collection = collection;
+        this.collection = collection || {};
+        console.log(this.collection);
       });
   }
 
@@ -123,8 +124,18 @@ export class WorkoutPlanCollection {
   }
 
   set(key, value) {
-    this.collection[key] = value;
+    // this.collection[key] = value;
+    // return this.storage.storageSet(WORKOUT_PLAN_COLLECTION, this.collection);
+    console.log(key, value);
+  }
+
+  save(collectionData) {
+    this.collection[collectionData.name] = collectionData;
     return this.storage.storageSet(WORKOUT_PLAN_COLLECTION, this.collection);
+    // console.log(collectionData);
+    // return new Promise((resolve, reject) => {
+    //   resolve(collectionData);
+    // });
   }
 
   delete(key) {

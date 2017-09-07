@@ -18,6 +18,7 @@ export default class Input extends React.Component {
 
 Input.propTypes = {
   label: PropTypes.string,
+  value: PropTypes.string,
   onChange: PropTypes.func,
   validationMessage: PropTypes.string
 };

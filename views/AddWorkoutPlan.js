@@ -2,11 +2,15 @@ import React from 'react';
 import { StyleSheet, View, TouchableHighlight, ScrollView } from 'react-native';
 import Reflux from 'reflux';
 import { Button, SearchBar, List, ListItem, Text } from 'react-native-elements';
-import SearchableList from '../components/SearchableList.js';
 import Modal from '../components/Modal.js';
 import MultiViewModal from '../components/MultiViewModal.js';
 import Card from '../components/Card.js';
+import Input from '../components/Input.js';
+import WorkoutCard from '../components/WorkoutCard.js';
+import AddWorkouts from '../components/AddWorkouts.js';
+import AddWeekDay from '../components/AddWeekDay.js';
 import { WorkoutPlan, Week, Day } from '../models/workout-plan.js';
+
 
 // workout plan
 /*
@@ -25,6 +29,7 @@ export default class AddWorkoutPlan extends Reflux.Component {
   constructor(props) {
     super(props);
     this.workoutCollection = this.props.navigation.state.params.workoutCollection.collection;
+    this.workoutPlanCollection = this.props.navigation.state.params.workoutPlanCollection;
     this.state = {
       selectedDay: '',
       day: new Day(),
@@ -69,48 +74,124 @@ export default class AddWorkoutPlan extends Reflux.Component {
   }
 
   addWeekDay() {
-    console.log(this.state.week);
+    console.log(this.state);
     let weekdays = Object.keys(this.state.week).map(d => d.charAt(0).toUpperCase() + d.substr(1))
     return (
-      <View>
-        {weekdays.map((day, i) => {
-          return (
-            <Button
-              key={day}
-              backgroundColor="#2c98f0"
-              icon={{name: 'code', type: 'font-awesome'}}
-              title={day}
-              onPress={() => {
-                  this.setState({currentStep: 'add_workouts', day: new Day(), selectedDay: day.toLowerCase()});
-                  console.log(new Day());
-                }
-              } />)
-            }
-        )}
-         <Button
-            backgroundColor="#2c98f0"
-            icon={{name: 'save', type: 'font-awesome'}}
-            title='Save Week'
-            onPress={() => {
-                this.setState({workoutPlan: this.state.workoutPlan.add(this.state.week), currentStep: 'add_workouts'});
-                console.log(title);
-              }
-            } />
-      </View>
+      <AddWeekDay
+        week={this.state.week}
+        dayIcon={{name: 'code', type: 'font-awesome'}}
+        dayBtnColor="#2c98f0"
+        onDaySelect={(day) => {
+          let dayta = this.state.week[day.toLocaleLowerCase()];
+          let title = dayta.title || day;
+          this.setState({
+            currentStep: 'add_workouts',
+            day: dayta.setTitle(title) || new Day(day),
+            selectedDay: day.toLowerCase()
+          });
+          console.log(new Day(day));
+        }}
+        saveBtnColor="#2c98f0"
+        saveBtnIcon={{name: 'save', type: 'font-awesome'}}
+        saveTitle="Save Week"
+        onSave={() => {
+            this.setState({
+              workoutPlan: this.state.workoutPlan.update(this.state.week, this.state.selectedWeek),
+              week: new Week(),
+              currentStep: '',
+              modalVisible: false
+            });
+          }
+        }
+      />);
+  }
+
+  isWorkoutSelected(workout) {
+    console.log(this);
+    let { workouts } = this.state.day;
+    let selected = false;
+     for (let i = 0; i < workouts.length; i++) {
+       if (workouts[i].name === workout.name) {
+         selected = true;
+         break;
+       }
+     }
+     return selected;
+  }
+
+  getCapitalized(str) {
+    return str.charAt(0).toUpperCase() + str.substr(1);
+  }
+
+  onDayTitleChange(title) {
+    this.setState({day: this.state.day.setTitle(title)});
+  }
+
+  addWorkouts() {
+    let { workoutsList } = this.state;
+    
+    console.log(this.state);
+
+    return (
+      <AddWorkouts
+        searchPlaceholder="Search for workout..."
+        workoutsList={workoutsList}
+        onFilter={workoutsList => this.setState({workoutsList})}
+        inputLabel="Title"
+        inputValue={this.state.day.title}
+        onInputChange={this.onDayTitleChange.bind(this)}
+        btnBackgroundColor="#2c98f0"
+        icon={{name: 'save', type: 'font-awesome'}}
+        btnTitle="Save Day"
+        btnOnPress={() => {
+            this.setState({
+              week: this.state.week.setDay(this.state.selectedDay, this.state.day),
+              day: new Day(),
+              currentStep: 'add_weekday'
+            });
+          }
+        }
+        isSelected={this.isWorkoutSelected.bind(this)}
+        onSelectedClick={(workout) => {
+          console.log(workout);
+          this.setState({
+            day: this.state.day.add(workout)
+          });
+        }}
+        onUnselectedClick={(workout) => {
+          console.log(workout);
+          this.setState({
+            day: this.state.day.remove(workout)
+          });
+        }}
+       />
     );
   }
 
-  addWeek() {
+  save() {
+    this.workoutPlanCollection.save(this.state.workoutPlan).then((data) => { console.log(data) });
+  }
+
+  onNameChange(name) {
+    this.setState({workoutPlan: this.state.workoutPlan.setName(name)});
+  }
+
+  render() {
     return (
-      <View>
-         <Button
-            backgroundColor="#2c98f0"
-            icon={{name: 'plus', type: 'font-awesome'}}
-            title='Add Week'
-            onPress={() => {
-                this.setState({currentStep: 'add_workouts', week: new Week()});
-              }
-            } />
+      <View style={styles.container}>
+        <Text>Add Workout Plan</Text>
+        <Input label="Name" onChange={this.onNameChange.bind(this)} validationMessage={'asdf'} />
+        <Button
+          backgroundColor="#2c98f0"
+          icon={{name: 'plus', type: 'font-awesome'}}
+          title="Add Week"
+          onPress={() => {
+              this.setState({
+                workoutPlan: this.state.workoutPlan.add(new Week()),
+              });
+            }
+          }
+        />
         {this.state.workoutPlan.weeks.map((week, i) => {
           return (
             <Button
@@ -119,89 +200,11 @@ export default class AddWorkoutPlan extends Reflux.Component {
               icon={{name: 'code', type: 'font-awesome'}}
               title={'Week ' + (i + 1)}
               onPress={() => {
-                  this.setState({currentStep: 'add_weekday', week, selectedWeek: i});
-                  console.log(title);
+                  this.setState({currentStep: 'add_weekday', week, modalVisible: true, selectedWeek: i});
                 }
               } />)
             }
         )}
-         <Button
-            backgroundColor="#2c98f0"
-            icon={{name: 'save', type: 'font-awesome'}}
-            title='Save Plan'
-            onPress={() => {
-                this.setState({workoutPlan: this.state.workoutPlan.add(this.state.week), currentStep: 'add_workouts'});
-                console.log(title);
-              }
-            } />
-      </View>
-    );
-  }
-
-  generateDetails(obj) {
-    let details = [
-      {label: 'Training Type', text: obj.trainingType.title},
-      {label: 'Rep Range', text: obj.repRange.from + ' - ' + obj.repRange.to},
-      {label: 'Time Between Sets', text: obj.timeBetweenSets + ' seconds'},
-      {label: 'Increase Weight By', text: obj.increaseWeightBy + 'lbs'}
-    ];
-    if (obj.isBodyWeight) {
-      details.unshift({label: 'Body Weight', text: 'Yes'});
-    }
-
-    return details;
-  }
-
-  addWorkouts() {
-    let { workoutsList } = this.state;
-    console.log(this.state);
-    return (
-      <View onLayout={e => console.log(e.nativeEvent.layout)}>
-        <Text style={{textAlign: 'center', marginBottom: 5}} h1>{this.state.day.title}</Text>
-        <SearchableList
-          placeholder="Search for workout..."
-          list={workoutsList}
-          onFilter={workoutsList => this.setState({workoutsList})}>
-            {Object.keys(workoutsList).map((key) => {
-              return (
-                <Card
-                  key={workoutsList[key].name}
-                  title={workoutsList[key].name}
-                  details={this.generateDetails(workoutsList[key])}
-                  selectText="Add"
-                  onSelect={() => {
-                    this.setState({
-                      day: this.state.day.add(workoutsList[key])
-                    });
-                  }
-                } />);
-              })
-            }
-        </SearchableList>
-        <Button
-          backgroundColor="#2c98f0"
-          icon={{name: 'save', type: 'font-awesome'}}
-          title="Save Day"
-          onPress={() => {
-              this.setState({workoutPlan: this.state.workoutPlan.add(this.state.week), modalVisible: false, currentStep: 'add_week'});
-            }
-          } />
-      </View>
-    );
-  }
-
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text>Add Workout Plan</Text>
-        <Button
-          backgroundColor="#2c98f0"
-          icon={{name: 'plus', type: 'font-awesome'}}
-          title="Add Week"
-          onPress={() => {
-              this.setState({week: new Week(), modalVisible: !this.state.modalVisible, currentStep: 'add_weekday'});
-            }
-          } />
         <MultiViewModal
             animationType={"slide"}
             transparent={false}
@@ -216,11 +219,7 @@ export default class AddWorkoutPlan extends Reflux.Component {
             backgroundColor="#2c98f0"
             icon={{name: 'save', type: 'font-awesome'}}
             title='Save Plan'
-            onPress={() => {
-                this.setState({workoutPlan: this.state.workoutPlan.add(this.state.week), currentStep: 'add_workouts'});
-                console.log(title);
-              }
-            } />
+            onPress={() => this.save()} />
       </View>
     );
   }

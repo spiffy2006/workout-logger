@@ -101,11 +101,6 @@ export default class AddWorkout extends Reflux.Component {
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
-    // flexDirection: 'column',
-    backgroundColor: '#fff',
-    // alignItems: 'center',
-    // justifyContent: 'center',
-    // paddingHorizontal: 10
+    backgroundColor: '#fff'
   },
 });
