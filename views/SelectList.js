@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { StyleSheet, title, View } from 'react-native';
 import { List, ListItem } from 'react-native-elements'
-import Reflux from 'reflux';
 import { NavigationActions } from 'react-navigation';
 
-export default class SelectList extends Reflux.Component {
+export default class SelectList extends Component {
   listItemClick(value) {
     let params = this.props.navigation.state.params;
     params.state[params.key] = value;
@@ -32,26 +31,3 @@ export default class SelectList extends Reflux.Component {
     );
   }
 }
-
-
-// @@@@@ USE SIMPLE PICKER SINCE NOW IT WORKS!!!!
-/*
-<SimplePicker
-          ref={'picker'}
-          options={options}
-          onSubmit={(option) => {
-            this.setState({
-              selectedOption: option,
-            });
-          }}
-        />
-*/
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#fff',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//   },
-// });

@@ -1,10 +1,12 @@
 import { AsyncStorage } from 'react-native';
-
+import { DummyData } from './dummy-data.js'; //  make config to create data if is dev mode
+// const settings = require('../.expo/settings.json');
+const settings = {dev: true}
 export const WORKOUT_COLLECTION = 'workout_collection';
 export const WORKOUT_PLAN_COLLECTION = 'workout_plan_collection';
+export const WORKOUT_PLAN_SELECTED = 'workout_plan_selected';
 export const WORKOUT_ARCHIVE_COLLECTION = 'workout_archive_collection';
 export const CURRENT_WORKOUT_COLLECTION = 'current_workout_collection';
-
 
 export default class Async {
   constructor() {
@@ -12,6 +14,11 @@ export default class Async {
       throw new Error('No available storage!');
     }
     this.storage = AsyncStorage;
+    if (settings.dev) {
+      let dummyData = new DummyData();
+      this.storageSet(WORKOUT_COLLECTION, dummyData.generateWorkouts());
+      this.storageSet(WORKOUT_PLAN_COLLECTION, dummyData.generateWorkoutPlans());
+    }
   }
 
   storageGet(key) {
@@ -108,10 +115,14 @@ export class WorkoutCollection {
 export class WorkoutPlanCollection {
   constructor() {
     this.storage = new Async();
-    this.storage.storageGet(WORKOUT_PLAN_COLLECTION)
+    this.getCollection()
       .then((collection) => {
         this.collection = collection || {};
         console.log(this.collection);
+      });
+    this.getSelectedPlan()
+      .then((plan) => {
+        this.plan = plan || {};
       });
   }
 
@@ -121,6 +132,14 @@ export class WorkoutPlanCollection {
     } else {
       return null;
     }
+  }
+
+  getCollection() {
+    return this.storage.storageGet(WORKOUT_PLAN_COLLECTION);
+  }
+
+  getSelectedPlan() {
+    return this.storage.storageGet(WORKOUT_PLAN_SELECTED);
   }
 
   set(key, value) {
@@ -138,6 +157,10 @@ export class WorkoutPlanCollection {
     // });
   }
 
+  saveSelectedPlan(plan) {
+    return this.storage.storageSet(WORKOUT_PLAN_SELECTED, plan);
+  }
+
   delete(key) {
     if (this.collection.hasOwnProperty(key)) {
       delete this.collection[key];
@@ -151,20 +174,24 @@ export class WorkoutArchiveCollection {
     this.storage = new Async();
     this.storage.storageGet(WORKOUT_ARCHIVE_COLLECTION)
       .then((collection) => {
-        this.collection = collection;
+        this.collection = collection || [];
       });
   }
 
-  get(key) {
-    if (this.collection.hasOwnProperty(key)) {
-      return this.collection[key];
+  get(index) {
+    if (this.collection[index]) {
+      return this.collection[index];
     } else {
       return null;
     }
   }
 
-  set(key, value) {
-    this.collection[key] = value;
+  search(criteria) { // criteria would be any workout fields
+
+  }
+
+  add(workout) {
+    this.collection.push(workout);
     return this.storage.storageSet(WORKOUT_ARCHIVE_COLLECTION, this.collection);
   }
 

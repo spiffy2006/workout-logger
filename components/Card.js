@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, ScrollView } from 'react-native';
 import PropTypes from 'prop-types';
-import Reflux from 'reflux';
 import { Card as C, ListItem, Button } from 'react-native-elements';
+import getIcon from '../constants/icons.js';
+import colors from '../constants/colors.js';
 /*
 this.name = '';
     this.trainingType = 'muscle';
@@ -31,7 +32,7 @@ export default class Card extends Component {
           title={this.props.title}>
           {this.generateDetails()}
           <Button
-            icon={{name: 'code'}}
+            icon={getIcon('code')}
             backgroundColor={this.props.buttonColor}
             onPress={() => this.props.onSelect(this.props.title)}
             buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
@@ -52,5 +53,5 @@ Card.propTypes = {
 Card.defaultProps = {
   onSelect: name => console.log(name),
   selectText: 'VIEW',
-  buttonColor: '#03A9F4'
+  buttonColor: colors.brand
 };

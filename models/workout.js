@@ -5,11 +5,39 @@ import Range from  './range.js';
 export const STRENGTH = {from: 3, to: 6};
 export const MUSCLE = {from: 8, to: 12};
 export const TONING = {from: 15, to: 20};
+export const TRAINING_TYPES = [
+  {title: 'Strength', value: 'strength'},
+  {title: 'Muscle Mass', value: 'muscle'},
+  {title: 'Toning', value: 'toning'},
+  {title: 'Custom', value: 'custom'}
+];
+export const SETS = ["1","2","3","4","5","6","7","8","9","10"];
+// https://www.bodybuilding.com/exercises/
+export const MUSCLES = [
+  "Neck",
+  "Traps (trapezius)",
+  "Shoulders (deltoids)",
+  "Chest (pectoralis)",
+  "Biceps (biceps brachii)",
+  "Forearm (brachioradialis)",
+  "Abs (rectus abdominis)",
+  "Quads (quadriceps)",
+  "Calves (gastrocnemius)",
+  "Triceps (triceps brachii)",
+  "Lats (latissimus dorsi)",
+  "Middle Back (rhomboids)",
+  "Lower Back",
+  "Glutes (gluteus maximus and medius)",
+  "Hamstrings (biceps femoris)"
+];
+
 export class Workout {
-  constructor(name, trainingType, repRange, timeBetweenSets, isBodyWeight, increaseWeightBy) {
+  constructor(name, trainingType, repRange, targetAreas, sets, timeBetweenSets, isBodyWeight, increaseWeightBy) {
     this.name = name || '';
     this.trainingType = trainingType || 'muscle';
     this.repRange = repRange || MUSCLE;
+    this.targetAreas = targetAreas || [];
+    this.sets = sets || '4';
     this.timeBetweenSets = timeBetweenSets || 90;
     this.isBodyWeight = isBodyWeight || false;
     this.increaseWeightBy = increaseWeightBy || 5;
@@ -21,17 +49,19 @@ export default class WorkoutModel {
     this.name = '';
     this.trainingType = 'muscle';
     this.repRange = this.getRepRangeFromTrainingType('muscle');
+    this.targetAreas = [];
+    this.sets = '4';
     this.timeBetweenSets = 90;
     this.isBodyWeight = false;
     this.increaseWeightBy = 5;
 
     this.options = {
       trainingType: [
-          {title: 'Select', value: '', selected: true},
-          {title: 'Strength', value: 'strength', selected: false},
-          {title: 'Muscle Mass', value: 'muscle', selected: false},
-          {title: 'Toning', value: 'toning', selected: false},
-          {title: 'Custom', value: 'custom', selected: false}
+          {title: 'Select', value: ''},
+          {title: 'Strength', value: 'strength'},
+          {title: 'Muscle Mass', value: 'muscle'},
+          {title: 'Toning', value: 'toning'},
+          {title: 'Custom', value: 'custom'}
         ]
     };
   }
@@ -41,6 +71,8 @@ export default class WorkoutModel {
       name: this.name,
       trainingType: this.trainingType,
       repRange: this.repRange,
+      targetAreas: this.targetAreas,
+      sets: this.sets,
       timeBetweenSets: this.timeBetweenSets,
       isBodyWeight: this.isBodyWeight,
       increaseWeightBy: this.increaseWeightBy
@@ -96,6 +128,15 @@ export default class WorkoutModel {
     this.trainingType = trainingType;
   }
 
+  getTrainingTypeByTitle(title) {
+    let options = this.options.trainingType;
+    for (var i = 0; i < options.length; i++) {
+      if (options[i].title === title) {
+        return options[i];
+      }
+    }
+  }
+
   getTrainingType() {
     return this.trainingType;
   }
@@ -106,6 +147,30 @@ export default class WorkoutModel {
 
   getRepRange() {
     return this.repRange;
+  }
+
+  addRemoveTargetArea(area) {
+    if (MUSCLES.indexOf(area) > -1) {
+      let index = this.targetAreas.indexOf(area);
+      if (index > -1) {
+        this.targetAreas.splice(index, 1);
+      } else {
+        this.targetAreas.push(area);
+      }
+    }
+    return this.targetAreas;
+  }
+
+  getTargetAreas() {
+    return this.targetAreas;
+  }
+
+  setSets(sets) {
+    this.sets = sets;
+  }
+
+  getSets() {
+    return this.sets;
   }
 
   setTimeBetweenSets(timeBetweenSets) {

@@ -7,6 +7,7 @@ export default class WorkoutCard extends Component {
     let details = [
       {label: 'Training Type', text: workout.trainingType.title},
       {label: 'Rep Range', text: workout.repRange.from + ' - ' + workout.repRange.to},
+      {label: 'Target Areas', text: workout.targetAreas && workout.targetAreas.join(', ')}, // Check workout.targetAreas only until all data is updated
       {label: 'Time Between Sets', text: workout.timeBetweenSets + ' seconds'},
       {label: 'Increase Weight By', text: workout.increaseWeightBy + 'lbs'}
     ];

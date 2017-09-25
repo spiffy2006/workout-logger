@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import { View } from 'react-native';
-import { Button } from 'react-native-elements';
+import { Button, List, ListItem } from 'react-native-elements';
 import PropTypes from 'prop-types';
 import Card from './Card.js';
+import getIcon from '../constants/icons.js';
+import colors from '../constants/colors.js';
 
 export default class AddWeekDay extends Component {
   render() {
@@ -10,19 +12,21 @@ export default class AddWeekDay extends Component {
     let weekdays = Object.keys(week).map(d => d.charAt(0).toUpperCase() + d.substr(1))
     return (
       <View>
-        {weekdays.map((day, i) => {
-          let lowerCaseDay = day.toLowerCase();
-          return (
-            <Button
-              key={day}
-              backgroundColor={dayBtnColor}
-              icon={dayIcon}
-              title={day}
-              onPress={() => {
-                this.props.onDaySelect(day);
-              }} />);
-          }
-        )}
+        <List>
+          {weekdays.map((day, i) => {
+            let lowerCaseDay = day.toLowerCase();
+            return (
+              <ListItem
+                key={day}
+                backgroundColor={dayBtnColor}
+                leftIcon={dayIcon}
+                title={day}
+                onPress={() => {
+                  this.props.onDaySelect(day);
+                }} />);
+            }
+          )}
+        </List>
          <Button
             backgroundColor={saveBtnColor}
             icon={saveBtnIcon}
@@ -48,11 +52,11 @@ AddWeekDay.propTypes = {
 };
 
 AddWeekDay.defaultProps = {
-  dayIcon: {name: 'code', type: 'font-awesome'},
-  dayBtnColor: "#2c98f0",
+  dayIcon: getIcon('sun-o'),
+  dayBtnColor: colors.brand,
   onDaySelect: day => console.log(day),
-  saveBtnColor: "#2c98f0",
-  saveBtnIcon: {name: 'save', type: 'font-awesome'},
+  saveBtnColor: colors.brand,
+  saveBtnIcon: getIcon('save'),
   saveTitle: "Save",
   onSave: () => console.log('add weekday save clicked')
 }

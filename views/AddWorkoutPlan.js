@@ -1,15 +1,46 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { StyleSheet, View, TouchableHighlight, ScrollView } from 'react-native';
-import Reflux from 'reflux';
 import { Button, SearchBar, List, ListItem, Text } from 'react-native-elements';
 import Modal from '../components/Modal.js';
 import MultiViewModal from '../components/MultiViewModal.js';
 import Card from '../components/Card.js';
 import Input from '../components/Input.js';
+import Select from '../components/Select.js';
 import WorkoutCard from '../components/WorkoutCard.js';
 import AddWorkouts from '../components/AddWorkouts.js';
 import AddWeekDay from '../components/AddWeekDay.js';
-import { WorkoutPlan, Week, Day } from '../models/workout-plan.js';
+import { WorkoutPlan, Week, Day, FITNESS_LEVELS, LENGTHS } from '../models/workout-plan.js';
+import getIcon from '../constants/icons.js';
+import colors from '../constants/colors.js';
+
+/*
+  on AddWorkout have target areas for the workout
+
+  overall info for plan
+    - name
+    - goal
+    - fitness level (beginner, intermediate, advanced) single or range
+    - length
+
+  Plan overview
+    - top of page has buttons for each week of the plan
+    - week calendar (https://www.bodybuilding.com/images/2016/august/shortcut-to-size-sale-page-calendar-2.jpg)
+    - each day has target areas (multiple select) and lists them in the calendar view I need to have this on each indivdual workout :(
+    - UI example -- accordion
+      weeks (1) (2) (3) (etc)
+      _______________________
+      Day 1 (Chesticles)
+      | Chest, Triceps, Abs
+      _______________________
+      Day 2 (Backness Everdene)
+      | Back, Biceps, Abs
+      _______________________
+      ...Scrollable
+
+  Plan view
+    - Title
+    - List of workouts: {name}:{sets} of {rep range}
+*/
 
 
 // workout plan
@@ -25,7 +56,7 @@ import { WorkoutPlan, Week, Day } from '../models/workout-plan.js';
   add week variation
 */
 
-export default class AddWorkoutPlan extends Reflux.Component {
+export default class AddWorkoutPlan extends Component {
   constructor(props) {
     super(props);
     this.workoutCollection = this.props.navigation.state.params.workoutCollection.collection;
@@ -82,8 +113,8 @@ export default class AddWorkoutPlan extends Reflux.Component {
     return (
       <AddWeekDay
         week={this.state.week}
-        dayIcon={{name: 'code', type: 'font-awesome'}}
-        dayBtnColor="#2c98f0"
+        dayIcon={getIcon('code')}
+        dayBtnColor={colors.brand}
         onDaySelect={(day) => {
           let dayta = this.state.week[day.toLocaleLowerCase()];
           let title = dayta.title || day;
@@ -93,8 +124,8 @@ export default class AddWorkoutPlan extends Reflux.Component {
             selectedDay: day.toLowerCase()
           });
         }}
-        saveBtnColor="#2c98f0"
-        saveBtnIcon={{name: 'save', type: 'font-awesome'}}
+        saveBtnColor={colors.brand}
+        saveBtnIcon={getIcon('save')}
         saveTitle="Save Week"
         onSave={() => {
             this.setState({
@@ -141,8 +172,8 @@ export default class AddWorkoutPlan extends Reflux.Component {
         inputLabel="Title"
         inputValue={this.state.day.title}
         onInputChange={this.onDayTitleChange.bind(this)}
-        btnBackgroundColor="#2c98f0"
-        icon={{name: 'save', type: 'font-awesome'}}
+        btnBackgroundColor={colors.brand}
+        icon={getIcon('save')}
         btnTitle="Save Day"
         btnOnPress={() => {
             this.setState({
@@ -176,14 +207,46 @@ export default class AddWorkoutPlan extends Reflux.Component {
     this.setState({workoutPlan: this.state.workoutPlan.setName(name)});
   }
 
+  onGoalChange(goal) {
+    this.setState({workoutPlan: this.state.workoutPlan.setGoal(goal)});
+  }
+
+  onFitnessLevelFromChange(level) {
+    this.setState({workoutPlan: this.state.workoutPlan.setLevelFrom(level)});
+  }
+
+  onFitnessLevelToChange(level) {
+    this.setState({workoutPlan: this.state.workoutPlan.setLevelTo(level)});
+  }
+
+  onLengthChange(length) {
+    this.setState({workoutPlan: this.state.workoutPlan.setLength(length)});
+  }
+
   render() {
     return (
       <View style={styles.container}>
         <Text>Add Workout Plan</Text>
         <Input label="Name" onChange={this.onNameChange.bind(this)} validationMessage={'asdf'} />
+        <Input label="Goal" onChange={this.onGoalChange.bind(this)} validationMessage={'asdf'} />
+        <Select
+          label={"Fitness Level From"}
+          value={this.state.workoutPlan.level.from}
+          options={FITNESS_LEVELS}
+          onSelect={this.onFitnessLevelFromChange.bind(this)} />
+        <Select
+          label={"Fitness Level To"}
+          value={this.state.workoutPlan.level.to}
+          options={FITNESS_LEVELS}
+          onSelect={this.onFitnessLevelToChange.bind(this)} />
+        <Select
+          label={"Select Length (weeks)"}
+          value={this.state.workoutPlan.length ? 'Select' : (this.state.workoutPlan.length + ' Weeks')}
+          options={LENGTHS}
+          onSelect={this.onLengthChange.bind(this)} />
         <Button
-          backgroundColor="#2c98f0"
-          icon={{name: 'plus', type: 'font-awesome'}}
+          backgroundColor={colors.brand}
+          icon={getIcon('plus')}
           title="Add Week"
           onPress={() => {
               this.setState({
@@ -196,8 +259,8 @@ export default class AddWorkoutPlan extends Reflux.Component {
           return (
             <Button
               key={i}
-              backgroundColor="#2c98f0"
-              icon={{name: 'code', type: 'font-awesome'}}
+              backgroundColor={colors.brand}
+              icon={getIcon('code')}
               title={'Week ' + (i + 1)}
               onPress={() => {
                   this.setState({currentStep: 'add_weekday', week, modalVisible: true, selectedWeek: i});
@@ -216,8 +279,8 @@ export default class AddWorkoutPlan extends Reflux.Component {
           {this.getModalContent()}
         </MultiViewModal>
         <Button
-            backgroundColor="#2c98f0"
-            icon={{name: 'save', type: 'font-awesome'}}
+            backgroundColor={colors.brand}
+            icon={getIcon('save')}
             title='Save Plan'
             onPress={() => this.save()} />
       </View>
@@ -228,6 +291,6 @@ export default class AddWorkoutPlan extends Reflux.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.blank,
   },
 });

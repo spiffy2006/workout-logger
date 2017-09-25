@@ -6,6 +6,8 @@ import Card from './Card.js';
 import Input from './Input.js';
 import SearchableList from './SearchableList.js';
 import WorkoutCard from './WorkoutCard.js';
+import getIcon from '../constants/icons.js';
+import colors from '../constants/colors.js';
 
 export default class AddWorkouts extends Component {
   isWorkoutSelected(workout) {
@@ -104,8 +106,8 @@ AddWorkouts.defaultProps = {
   inputLabel: '',
   onInputChange: value => console.log(value),
   inputValidationMessage: '',
-  btnBackgroundColor: '#2c98f0',
-  icon: {name: 'save', type: 'font-awesome'},
+  btnBackgroundColor: colors.brand,
+  icon: getIcon('save'),
   btnTitle: 'Click',
   btnOnPress: () => console.log('button pressed')
 }

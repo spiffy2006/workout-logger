@@ -7,6 +7,7 @@ import Home from './views/Home.js';
 import AddWorkout from './views/AddWorkout.js';
 import AddWorkoutPlan from './views/AddWorkoutPlan.js';
 import ViewWorkouts from './views/ViewWorkouts.js';
+import ViewWorkoutPlans from './views/ViewWorkoutPlans.js';
 import Workout from './views/Workout.js';
 import SelectList from './views/SelectList.js';
 
@@ -16,6 +17,7 @@ const WorkoutLogger = StackNavigator(
     AddWorkout: { screen: AddWorkout },
     AddWorkoutPlan: { screen: AddWorkoutPlan },
     ViewWorkouts: { screen: ViewWorkouts },
+    ViewWorkoutPlans: { screen: ViewWorkoutPlans },
     Workout: { screen: Workout },
     SelectList: { screen: SelectList }
   }

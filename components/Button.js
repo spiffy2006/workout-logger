@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, Text, View, Dimensions } from 'react-native';
 import PropTypes from 'prop-types';
+import colors from '../constants/colors.js';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -29,14 +30,14 @@ Button.propTypes = {
 };
 
 Button.defaultProps = {
-  color: '#fff',
-  backgroundColor: '#333',
+  color: colors.blank,
+  backgroundColor: colors.three,
   fullWidth: false
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.blank,
     alignItems: 'center',
     justifyContent: 'center',
     height: 30
